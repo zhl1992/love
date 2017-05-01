@@ -1,37 +1,83 @@
-## Welcome to GitHub Pages
-
-You can use the [editor on GitHub](https://github.com/zhl1992/love/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/zhl1992/love/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<canvas id='cavs'></canvas>
+</body>
+</html>
+<script type="text/javascript">
+var canvas = document.getElementById("cavs");
+const WIDTH = window.innerWidth;
+const HEIGHT = window.innerHeight;
+canvas.setAttribute('width', WIDTH);
+canvas.setAttribute('height', HEIGHT);
+var context = canvas.getContext("2d");
+var start =
+{
+    loves: [],
+    DURATION: 30,
+    begin: function()
+    {
+        this.createLove();
+    },
+    createLove: function()
+    {
+        for (var i = 0; i < WIDTH / 34; i++)
+        {
+            var love = new Love();
+            this.loves.push(love);
+        }
+        setInterval(this.drawLove.bind(this), this.DURATION);
+    },
+    drawLove: function()
+    {
+        context.clearRect(0, 0, WIDTH, HEIGHT);
+        for (var key in this.loves)
+        {
+            this.loves[key].draw();
+        }
+    }
+}
+function Love()
+{
+    var me = this;
+    function rand() 
+    {
+        me.attr.scale = Math.random() * 3 + 1;
+        me.attr.x = Math.floor(Math.random() * WIDTH-40);
+        me.attr.y = Math.floor(Math.random() * 100  + HEIGHT - 100);
+        me.attr.ColR = Math.floor(Math.random() * 255);
+        me.attr.ColG = Math.floor(Math.random() * 255);
+        me.attr.ColB = Math.floor(Math.random() * 255);
+        me.attr.alpha = Math.random() * 0.2 + 0.8;
+        me.attr.vector = Math.random() * 4 + 1;
+    }
+    (function(){me.attr = {};rand();} ());
+    me.draw = function()
+    {
+        if (me.attr.alpha < 0.01) rand();
+        x = me.attr.x;
+        y = me.attr.y;
+        scale = 4 * me.attr.scale;
+        context.beginPath();
+        context.bezierCurveTo( x + 2.5*scale, y + 2.5*scale, x + 2.0*scale, y, x, y );
+        context.bezierCurveTo( x - 3.0*scale, y, x - 3.0*scale, y + 3.5*scale,x - 3.0*scale,y + 3.5*scale );
+        context.bezierCurveTo( x - 3.0*scale, y + 5.5*scale, x - 1.0*scale, y + 7.7*scale, x + 2.5*scale, y + 9.5*scale );
+        context.bezierCurveTo( x + 6.0*scale, y + 7.7*scale, x + 8.0*scale, y + 5.5*scale, x + 8.0*scale, y + 3.5*scale );
+        context.bezierCurveTo( x + 8.0*scale, y + 3.5*scale, x + 8.0*scale, y, x + 5.0*scale, y );
+        context.bezierCurveTo( x + 3.5*scale, y, x + 2.5*scale, y + 2.5*scale, x + 2.5*scale, y + 2.5*scale );
+        context.fillStyle = "rgba(" + me.attr.ColR + "," + me.attr.ColG + "," + me.attr.ColB + "," + me.attr.alpha + ")";
+        context.fill();
+        context.lineWidth = 0.5; 
+        context.stroke();
+        me.attr.y -= me.attr.vector;
+        me.attr.alpha -= (me.attr.vector / 2.9 * 3.5 / HEIGHT);
+    }
+}
+window.onload = function()
+{
+    start.begin();
+}
+</script>
